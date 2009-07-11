@@ -27,12 +27,14 @@ $(function() {
 	test( 'over empty list', function() {
 		var list = List( $('ul.empty').get(0) );
 		
+		ok( list.reorder(), "reorder shoudn't cause errors" );
+		
 		difference( 'List( $("ul.empty").get(0) ).size()', 0, function() {
-			ok( list.remove( 0 ), "remove one shouldn't cause error" );
+			ok( list.remove( 0 ), "remove one shouldn't cause errors" );
 		} );
 		
 		difference( 'List( $("ul.empty").get(0) ).size()', 1, function() {
-			ok( list.insert( createEntry( 'new one') ), "insert one shouldn't cause error" );
+			ok( list.insert( createEntry( 'new one') ), "insert one shouldn't cause errors" );
 		} );		
 	} );
 
@@ -100,6 +102,28 @@ $(function() {
 		ok ( isInPosition( 'b' ), 'they should be in position' );		
 	} );
 
+	test( 'reorder()', function() {
+		var list = List( $('ul.todo').get(0) );
+		
+		ok ( list.reorder( {reverse: true} ), 'sort reversely' );
+		ok ( isInPosition( 'g', 'f', 'e', 'd', 'c', 'b', 'a' ), 'they should be in position' );
+		
+		ok ( list.reorder(), 'sort' );
+		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), 'they should be in position' );
+		
+		ok ( list.reorder( {shuffle: true} ), 'shuffle' );
+		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), "their positions shouldn't be the same position as berfore" );		
+	
+		ok ( list.reorder( {fn: priority} ), 'sort by priority' );
+		ok ( isInPosition( 'd', 'g', 'e', 'a', 'f', 'b', 'c' ), 'they should be in position' );
+		
+		ok ( list.reorder( {fn: priority, reverse: true} ), 'sort in reverse by priority' );
+		ok ( isInPosition( 'c', 'b', 'f', 'a', 'e', 'g', 'd' ), 'they should be in position' );
+		
+		ok ( list.reorder( {eyecandy: true} ), 'sort with eyecandy enabled)' );
+		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), 'they should be in position' );
+	} );
+
 	test( 'chain', function() {
 		var list = List( $('ul.todo').get(0) );
 
@@ -135,5 +159,14 @@ $(function() {
 			);
 		} );
 		ok ( isInPosition( 'mm' ), 'they should be in position' );
+		
+		difference( 'List( $("ul.todo").get(0) ).size()', -7, function() { 
+			ok( 
+				list.insert( createEntry( 'nn' ) ).insert( 1, createEntry( 'oo' ) )
+					.reorder().remove( 1 ).insert( createEntry( 'pp' ) )
+				, 'insert( e ).insert( 1, e ).reorder().remove( 1 ).insert( e )' 
+			);
+		} );
+		ok ( isInPosition( 'pp', 'mm', 'oo' ), 'they should be in position' );	
 	} );
 })
