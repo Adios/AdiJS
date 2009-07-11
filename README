@@ -1,0 +1,6 @@
+AdiJS is a trivial javascript library written by Adios, as a practice...
+
+* README			- me.
+* list.js			- chain-able list implementation.
+* test/index.html	- QUnit test framework.
+* test/test-list.js - test case for list.
