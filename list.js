@@ -28,11 +28,11 @@
 		
 		/* insert( index, DOM, ...) or insert( DOM, ... ) with index = 0 */
 		insert: function() {
-			var i = 0, index = 0;
+			var i = 0, index = 0, length = this.size();
 			
 			if ( typeof arguments[0] == 'number' ) {
 				index = parseInt( arguments[0] );
-				if ( index > this.size() || index < 0 ) index = 0;
+				if ( index > length || index < 0 ) index = 0;
 				i++;
 			}
 
@@ -44,7 +44,7 @@
 			}
 			
 			/* attach to the DOM tree */
-			this.root.insertBefore( frag, this.entries[index] );
+			this.root.insertBefore( frag, length ? this.entries[index] : null  );
 			
 			return this.init( this.root );
 		},
