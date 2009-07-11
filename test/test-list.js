@@ -2,7 +2,7 @@ $(function() {
 
 	function isInPosition() {
 		for ( var i = 0, al = arguments.length; i < al; i++ ) {
-			if ( $('ul.todo > *').eq(i).text() != arguments[i] ) return false;
+			if ( $.trim($('ul.todo > *').eq(i).text()) != arguments[i] ) return false;
 		}
 		return true;		
 	};
