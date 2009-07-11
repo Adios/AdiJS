@@ -33,7 +33,7 @@
 			/* accepted a list of dom, e.g. insert(0, dom, dom, dom) */
 			var frag = document.createDocumentFragment();
 			
-			for ( al = arguments.length; i < al; i++ ) {
+			for ( var al = arguments.length; i < al; i++ ) {
 				frag.appendChild( arguments[i] );
 			}
 			
