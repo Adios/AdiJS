@@ -24,6 +24,8 @@ $(function() {
 	} );
 	
 	test( 'insert()', function() {
+		ok ( $('#list > *').size() == 0, 'start with an empty list' );
+		
 		var list = List( document.getElementById( 'list' ) );
 
 		difference( 'List($("#list").get(0)).size()', function() { 
@@ -60,5 +62,39 @@ $(function() {
 			ok( list.insert( 200, createEntry( '10' ) ), 'insert( 200, e )' );
 		} );
 		ok ( isInPosition( '10', '9'), 'it should be at the head'); 
+	} );
+	
+	test( 'remove()', function() {
+		ok ( 
+			$('#list').append('<li>a</li><li>b</li><li>c</li><li>d</li><li>e</li><li>f</li>'), 
+			'create a list with a,b,c,d,e,f' 
+		);
+		
+		var list = List( document.getElementById( 'list' ) );
+		
+		difference( 'List($("#list").get(0)).size()', -1, function() {
+			ok( list.remove( 3 ), 'remove( 3 )' );
+		} );
+		ok ( isInPosition( 'a', 'b', 'c', 'e', 'f' ), 'they should be in position' );
+		
+		difference( 'List($("#list").get(0)).size()', -3, function() {
+			ok( list.remove( 0, 3, 2 ), 'remove( 0, 3, 2 )' );
+		} );
+		ok ( isInPosition( 'b', 'f' ), 'they should be in position' );
+		
+		difference( 'List($("#list").get(0)).size()', -1, function() {
+			ok( list.remove( 1, 1, 1 ), 'remove( 1, 1, 1 )' );
+		} );
+		ok ( isInPosition( 'b' ), 'they should be in position' );
+		
+		difference( 'List($("#list").get(0)).size()', 0, function() {
+			ok( list.remove( 100, -100, undefined ), 'remove( 100, -100, undefined )' );
+		} );
+		ok ( isInPosition( 'b' ), 'they should be in position' );
+		
+		difference( 'List($("#list").get(0)).size()', -1, function() {
+			ok( list.remove( 0, 0, 0 ), 'remove( 0, 0, 0 )' );
+			ok( true, 'remove empty list sholud not cause errors' );
+		} );
 	} );
 })

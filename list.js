@@ -42,6 +42,33 @@
 			
 			return this.init( this.root );
 		},
+		
+		/* remove( pos, pos, pos, ... ) */
+		remove: function() {
+			var pos,	
+			
+				/* unique the arguments, return an array of elements to be removed. */
+				queue = (function( entries, length ) {
+					var a = new Array;
+					/* uniq */
+					for ( var i = this.length - 1; i >= 0; i-- ) {
+						for ( var j = i - 1; j >= 0; j-- ) {
+							if ( this[j] === this[i] ) j = --i;
+						}
+						
+						/* resolution, push to array */
+						var pos = parseInt( this[i] );
+						if ( pos >= 0 && pos <= length ) a.push( entries[pos] );
+					}
+					return a;
+				}).apply( Array.prototype.slice.call( arguments ), [this.entries, this.size()] ),
+				
+				ql = queue.length - 1;
+				
+			for ( ; ql >= 0; ql-- ) { this.root.removeChild( queue[ql] ); }
+			
+			return this.init( this.root );
+		},
 	};
 
 	List.fn.init.prototype = List.prototype;
