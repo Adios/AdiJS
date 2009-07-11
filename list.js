@@ -20,13 +20,13 @@
 			return this.entries.length;
 		},
 		
-		/* insert( pos, DOM, ...) or insert( DOM, ... ) with pos = 0 */
+		/* insert( index, DOM, ...) or insert( DOM, ... ) with index = 0 */
 		insert: function() {
-			var i = 0, pos = 0;
+			var i = 0, index = 0;
 			
 			if ( typeof arguments[0] == 'number' ) {
-				pos = parseInt( arguments[0] );
-				if ( pos > this.size() || pos < 0 ) pos = 0;
+				index = parseInt( arguments[0] );
+				if ( index > this.size() || index < 0 ) index = 0;
 				i++;
 			}
 
@@ -38,14 +38,14 @@
 			}
 			
 			/* attach to the DOM tree */
-			this.root.insertBefore( frag, this.entries[pos] );
+			this.root.insertBefore( frag, this.entries[index] );
 			
 			return this.init( this.root );
 		},
 		
-		/* remove( pos, pos, pos, ... ) */
+		/* remove( index, index, index, ... ) */
 		remove: function() {
-			var pos,	
+			var index,	
 			
 				/* unique the arguments, return an array of elements to be removed. */
 				queue = (function( entries, length ) {
@@ -57,8 +57,8 @@
 						}
 						
 						/* resolution, push to array */
-						var pos = parseInt( this[i] );
-						if ( pos >= 0 && pos <= length ) a.push( entries[pos] );
+						var index = parseInt( this[i] );
+						if ( index >= 0 && index <= length - 1 ) a.push( entries[index] );
 					}
 					return a;
 				}).apply( Array.prototype.slice.call( arguments ), [this.entries, this.size()] ),

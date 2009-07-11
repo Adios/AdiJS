@@ -13,6 +13,7 @@ $(function() {
 		return e;
 	};
 
+
 	module( 'List' );
 	
 	test( 'List.noConflict()', function() {
@@ -22,7 +23,7 @@ $(function() {
 			return ( l === L && window.List === undefined ) ? l : false;
 		})(), 'it works' );		
 	} );
-	
+
 	test( 'insert()', function() {
 		ok ( $('#list > *').size() == 0, 'start with an empty list' );
 		
@@ -94,7 +95,51 @@ $(function() {
 		
 		difference( 'List($("#list").get(0)).size()', -1, function() {
 			ok( list.remove( 0, 0, 0 ), 'remove( 0, 0, 0 )' );
+		} );
+		
+		difference( 'List($("#list").get(0)).size()', 0, function() {	
+			ok( list.remove( 0 ), 'remove( 0 )' );
 			ok( true, 'remove empty list sholud not cause errors' );
 		} );
+		
+	} );
+
+	test( 'chain', function() {
+		ok ( $('#list > *').size() == 0, 'start with an empty list' );
+		
+		var list = List( document.getElementById( 'list' ) );
+
+		difference( 'List($("#list").get(0)).size()', 0, function() { 
+			ok( list.insert( createEntry( '1' ) ).remove( 0 ) , 'insert( e ).remove( 0 )' );
+		} );
+		
+		difference( 'List($("#list").get(0)).size()', 1, function() { 
+			ok( 
+				list.insert( createEntry( '1' ) ).insert( createEntry( '2' ) )
+					.remove( 0 ).insert( createEntry( '3' ), createEntry( '4' ) )
+					.remove( 1, 2 )
+				, 'insert( e ).insert( e ).remove( 0 ).insert( e, e ).remove( 1, 2 )' 
+			);
+		} );
+		ok ( isInPosition( '3' ), 'they should be in position' );
+			
+		difference( 'List($("#list").get(0)).size()', 0, function() { 
+			ok( 
+				list.insert( 1, createEntry( '5' ) ).insert( 0, createEntry( '6' ) )
+					.remove( 0 ).insert( 1, createEntry( '7' ), createEntry( '8' ) )
+					.remove( 1, 2, 3 )
+				, 'insert( 1, e ).insert( 0, e ).remove( 0 ).insert( 1, e, e ).remove( 1, 2, 3 )' 
+			);
+		} );
+		ok ( isInPosition( '3' ), 'they should be in position' );
+		
+		difference( 'List($("#list").get(0)).size()', 0, function() { 
+			ok( 
+				list.insert( -100, createEntry( '9' ) ).insert( 100, createEntry( '10' ) )
+					.remove( 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3 ).insert( createEntry( '11' ) )
+				, 'insert( -100, e ).insert( 100, e ).remove( a lot ).insert( e )' 
+			);
+		} );
+		ok ( isInPosition( '11' ), 'they should be in position' );
 	} );
 })
