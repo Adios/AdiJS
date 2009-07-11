@@ -68,7 +68,7 @@
 			for ( ; ql >= 0; ql-- ) { this.root.removeChild( queue[ql] ); }
 			
 			return this.init( this.root );
-		},
+		}
 	};
 
 	List.fn.init.prototype = List.prototype;
