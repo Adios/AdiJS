@@ -2,7 +2,7 @@ $(function() {
 
 	function isInPosition() {
 		for ( var i = 0, al = arguments.length; i < al; i++ ) {
-			if ( $('#list > *').eq(i).text() != arguments[i] ) return false;
+			if ( $('ul.todo > *').eq(i).text() != arguments[i] ) return false;
 		}
 		return true;		
 	};
@@ -23,17 +23,27 @@ $(function() {
 			return ( l === L && window.List === undefined ) ? l : false;
 		})(), 'it works' );		
 	} );
-
-	test( 'insert()', function() {
-		ok ( $('#list > *').size() == 0, 'start with an empty list' );
+	
+	test( 'over empty list', function() {
+		var list = List( $('ul.empty').get(0) );
 		
-		var list = List( document.getElementById( 'list' ) );
+		difference( 'List( $("ul.empty").get(0) ).size()', 0, function() {
+			ok( list.remove( 0 ), "remove one shouldn't cause error" );
+		} );
+		
+		difference( 'List( $("ul.empty").get(0) ).size()', 1, function() {
+			ok( list.insert( createEntry( 'new one') ), "insert one shouldn't cause error" );
+		} );		
+	} );
 
-		difference( 'List($("#list").get(0)).size()', function() { 
+	test( 'insert()', function() {		
+		var list = List( $('ul.todo').get(0) );
+
+		difference( 'List( $("ul.todo").get(0) ).size()', function() { 
 			ok( list.insert( createEntry( '1' ) ) , 'insert( e )' );
 		} );
 		
-		difference( 'List($("#list").get(0)).size()', 3, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 3, function() { 
 			ok( 
 				list.insert( createEntry( '2' ), createEntry( '3' ), createEntry( '4' ) ) , 
 				'insert( e, e, e )' 
@@ -41,12 +51,12 @@ $(function() {
 		} );
 		ok ( isInPosition( '2', '3', '4', '1' ), 'they should be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', 1, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() { 
 			ok( list.insert( 1, createEntry( '5' ) ) , 'insert( 1, e )' );
 		} );
 		ok ( isInPosition( '2', '5', '3' ), 'they sholud be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', 3, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 3, function() { 
 			ok( 
 				list.insert( 2, createEntry( '6' ), createEntry( '7' ), createEntry( '8' ) ),
 				'insert( 2, e, e, e )'
@@ -54,92 +64,76 @@ $(function() {
 		} );
 		ok ( isInPosition( '2', '5', '6', '7', '8', '3' ), 'they should be in position' );
 	
-		difference( 'List($("#list").get(0)).size()', 1, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() { 
 			ok( list.insert( -1, createEntry( '9' ) ), 'insert( -1, e )' );
 		} );
 		ok ( isInPosition( '9', '2'), 'it should be at the head');
 		
-		difference( 'List($("#list").get(0)).size()', 1, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() { 
 			ok( list.insert( 200, createEntry( '10' ) ), 'insert( 200, e )' );
 		} );
 		ok ( isInPosition( '10', '9'), 'it should be at the head'); 
 	} );
 	
 	test( 'remove()', function() {
-		ok ( 
-			$('#list').append('<li>a</li><li>b</li><li>c</li><li>d</li><li>e</li><li>f</li>'), 
-			'create a list with a,b,c,d,e,f' 
-		);
-		
-		var list = List( document.getElementById( 'list' ) );
-		
-		difference( 'List($("#list").get(0)).size()', -1, function() {
+		var list = List( $('ul.todo').get(0) );
+
+		difference( 'List( $("ul.todo").get(0) ).size()', -1, function() {
 			ok( list.remove( 3 ), 'remove( 3 )' );
 		} );
-		ok ( isInPosition( 'a', 'b', 'c', 'e', 'f' ), 'they should be in position' );
+
+		ok ( isInPosition( 'a', 'b', 'c', 'e', 'f', 'g' ), 'they should be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', -3, function() {
+		difference( 'List( $("ul.todo").get(0) ).size()', -3, function() {
 			ok( list.remove( 0, 3, 2 ), 'remove( 0, 3, 2 )' );
 		} );
-		ok ( isInPosition( 'b', 'f' ), 'they should be in position' );
+		ok ( isInPosition( 'b', 'f', 'g' ), 'they should be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', -1, function() {
-			ok( list.remove( 1, 1, 1 ), 'remove( 1, 1, 1 )' );
+		difference( 'List( $("ul.todo").get(0) ).size()', -2, function() {
+			ok( list.remove( 1, 1, 1, 2 ), 'remove( 1, 1, 1, 2 )' );
 		} );
 		ok ( isInPosition( 'b' ), 'they should be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', 0, function() {
+		difference( 'List( $("ul.todo").get(0) ).size()', 0, function() {
 			ok( list.remove( 100, -100, undefined ), 'remove( 100, -100, undefined )' );
 		} );
-		ok ( isInPosition( 'b' ), 'they should be in position' );
-		
-		difference( 'List($("#list").get(0)).size()', -1, function() {
-			ok( list.remove( 0, 0, 0 ), 'remove( 0, 0, 0 )' );
-		} );
-		
-		difference( 'List($("#list").get(0)).size()', 0, function() {	
-			ok( list.remove( 0 ), 'remove( 0 )' );
-			ok( true, 'remove empty list sholud not cause errors' );
-		} );
-		
+		ok ( isInPosition( 'b' ), 'they should be in position' );		
 	} );
 
 	test( 'chain', function() {
-		ok ( $('#list > *').size() == 0, 'start with an empty list' );
-		
-		var list = List( document.getElementById( 'list' ) );
+		var list = List( $('ul.todo').get(0) );
 
-		difference( 'List($("#list").get(0)).size()', 0, function() { 
-			ok( list.insert( createEntry( '1' ) ).remove( 0 ) , 'insert( e ).remove( 0 )' );
+		difference( 'List( $("ul.todo").get(0) ).size()', 0, function() { 
+			ok( list.insert( createEntry( 'aa' ) ).remove( 0 ) , 'insert( e ).remove( 0 )' );
 		} );
 		
-		difference( 'List($("#list").get(0)).size()', 1, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() { 
 			ok( 
-				list.insert( createEntry( '1' ) ).insert( createEntry( '2' ) )
-					.remove( 0 ).insert( createEntry( '3' ), createEntry( '4' ) )
+				list.insert( createEntry( 'bb' ) ).insert( createEntry( 'cc' ) )
+					.remove( 0 ).insert( createEntry( 'dd' ), createEntry( 'ee' ) )
 					.remove( 1, 2 )
 				, 'insert( e ).insert( e ).remove( 0 ).insert( e, e ).remove( 1, 2 )' 
 			);
 		} );
-		ok ( isInPosition( '3' ), 'they should be in position' );
+		ok ( isInPosition( 'dd' ), 'they should be in position' );
 			
-		difference( 'List($("#list").get(0)).size()', 0, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', 0, function() { 
 			ok( 
-				list.insert( 1, createEntry( '5' ) ).insert( 0, createEntry( '6' ) )
-					.remove( 0 ).insert( 1, createEntry( '7' ), createEntry( '8' ) )
+				list.insert( 1, createEntry( 'ff' ) ).insert( 0, createEntry( 'gg' ) )
+					.remove( 0 ).insert( 1, createEntry( 'hh' ), createEntry( 'ii' ) )
 					.remove( 1, 2, 3 )
 				, 'insert( 1, e ).insert( 0, e ).remove( 0 ).insert( 1, e, e ).remove( 1, 2, 3 )' 
 			);
 		} );
-		ok ( isInPosition( '3' ), 'they should be in position' );
+		ok ( isInPosition( 'dd' ), 'they should be in position' );
 		
-		difference( 'List($("#list").get(0)).size()', 0, function() { 
+		difference( 'List( $("ul.todo").get(0) ).size()', -7, function() { 
 			ok( 
-				list.insert( -100, createEntry( '9' ) ).insert( 100, createEntry( '10' ) )
-					.remove( 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3 ).insert( createEntry( '11' ) )
+				list.insert( -100, createEntry( 'jj' ) ).insert( 100, createEntry( 'kk' ) )
+					.remove( 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 1, 8, 9, 10 ).insert( createEntry( 'mm' ) )
 				, 'insert( -100, e ).insert( 100, e ).remove( a lot ).insert( e )' 
 			);
 		} );
-		ok ( isInPosition( '11' ), 'they should be in position' );
+		ok ( isInPosition( 'mm' ), 'they should be in position' );
 	} );
 })

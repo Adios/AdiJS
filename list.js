@@ -9,8 +9,14 @@
 
 	List.fn = List.prototype = {
 
-		init: function( elem ) { 
-			this.entries = elem.childNodes; 
+		init: function( elem ) {
+			
+			this.entries = new Array;
+			
+			for ( var i = 0, ns = elem.childNodes, nsl = ns.length; i < nsl; i++ ) {
+				if ( ns[i].nodeType == 1 ) this.entries.push( ns[i] );
+			}			
+			 
 			this.root = elem;
 			
 			return this;
