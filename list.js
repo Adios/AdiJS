@@ -85,7 +85,6 @@
 				reverse: false,				reverse the output
 				shuffle: false,				shuffle the list
 				fn: `compare text content`,	user-defined comparison function
-				eyecandy: false				candy candy
 			}
 			list.reorder(); // just sort it
 			lsit.reorder(); // toggle(reverse) the privious result.

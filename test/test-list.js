@@ -127,10 +127,6 @@ $(function() {
 		ok ( list.insert( createEntry( 'h' ) ).reorder(), 'toggle sort after inserting' );
 		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefgh', 'in position' );
 
-/*
-		ok ( list.reorder( {eyecandy: true} ), 'sort with eyecandy enabled)' );
-		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefg', 'in position' );
-*/
 		ok ( list.reorder( {shuffle: true} ), 'shuffle' );
 		ok ( $('ul.todo > *').text().replace(/ /g, '') != 'abcdefgh', 'now is ' + $('ul.todo > *').text().replace(/ /g, '') );
 	} );
