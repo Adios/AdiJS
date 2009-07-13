@@ -6,6 +6,17 @@ $(function() {
 		return e;
 	};
 
+	function comparePriority( a, b ) {
+		var p = { '': 0, 'non-urgent': 1, 'urgent': 2, 'emergent': 3 };
+
+		if ( p[a.className] == p[b.className] ) {
+			return (
+				(a.innerText ? a.innerText : a.textContent ) > (b.innerText ? b.innerText : b.textContent )
+			) ? 1 : 0;
+		}
+
+		return p[b.className] - p[a.className];
+	};
 
 	module( 'List' );
 
@@ -104,20 +115,24 @@ $(function() {
 		ok ( list.reorder(), 'sort' );
 		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefg', 'in position' );
 
-		ok ( list.reorder( {shuffle: true} ), 'shuffle' );
-		ok ( $('ul.todo > *').text().replace(/ /g, '') != 'abcdefg', "their positions shouldn't be the same position as before" );
+		ok ( list.reorder( {fn: comparePriority} ), 'sort by priority' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'degafbc', 'in position' );
 
-		ok ( list.reorder( {fn: priority} ), 'sort by priority' );
-		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'dgeafbc', 'in position' );
-
-		ok ( list.reorder( {fn: priority, reverse: true} ), 'sort in reverse by priority' );
-		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'cbfaegd', 'in position' );
+		ok ( list.reorder( {fn: comparePriority, reverse: true} ), 'sort in reverse by priority' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'cbfaged', 'in position' );
 
 		ok ( list.reorder(), 'toggle sort' );
-		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'dgeafbc', 'in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'degafbc', 'in position' );
 
+		ok ( list.insert( createEntry( 'h' ) ).reorder(), 'toggle sort after inserting' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefgh', 'in position' );
+
+/*
 		ok ( list.reorder( {eyecandy: true} ), 'sort with eyecandy enabled)' );
 		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefg', 'in position' );
+*/
+		ok ( list.reorder( {shuffle: true} ), 'shuffle' );
+		ok ( $('ul.todo > *').text().replace(/ /g, '') != 'abcdefgh', 'now is ' + $('ul.todo > *').text().replace(/ /g, '') );
 	} );
 
 	test( 'chain', function() {
@@ -156,13 +171,13 @@ $(function() {
 		} );
 		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'mm', 'in position' );
 
-		difference( 'List( $("ul.todo").get(0) ).size()', -7, function() {
+		difference( 'List( $("ul.todo").get(0) ).size()', 2, function() {
 			ok(
 				list.insert( createEntry( 'nn' ) ).insert( 1, createEntry( 'oo' ) )
-					.reorder().remove( 1 ).insert( createEntry( 'pp' ) ).reorder()
-				, 'insert( e ).insert( 1, e ).reorder().remove( 1 ).insert( e ).reorder()'
+					.reorder().remove( 1 ).reorder().insert( createEntry( 'pp' ) ).reorder()
+				, 'insert 2, reorder, remove 1, toggle reorder, insert 1, reorder'
 			);
 		} );
-		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'oommpp', 'in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'mmoopp', 'in position' );
 	} );
 })

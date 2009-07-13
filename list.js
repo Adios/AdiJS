@@ -46,6 +46,9 @@
 			/* attach to the DOM tree */
 			this.root.insertBefore( frag, length ? this.entries[index] : null  );
 
+			/* insert may change the order of list */
+			this.ordered = false;
+
 			return this.init( this.root );
 		},
 
@@ -67,13 +70,63 @@
 						if ( index >= 0 && index <= length - 1 ) a.push( entries[index] );
 					}
 					return a;
-				}).apply( Array.prototype.slice.call( arguments ), [this.entries, this.size()] ),
+				}).call( Array.prototype.slice.call( arguments ), this.entries, this.size() ),
 
 				ql = queue.length - 1;
 
 			for ( ; ql >= 0; ql-- ) { this.root.removeChild( queue[ql] ); }
 
 			return this.init( this.root );
+		},
+
+		/*
+			ooo = {
+				sorter: null,				user-defined sorter function
+				reverse: false,				reverse the output
+				shuffle: false,				shuffle the list
+				fn: `compare text content`,	user-defined comparison function
+				eyecandy: false				candy candy
+			}
+			list.reorder(); // just sort it
+			lsit.reorder(); // toggle(reverse) the privious result.
+		*/
+		reorder : function( ooo ) {
+			var	root = this.root.cloneNode( false ),
+				frag = document.createDocumentFragment();
+
+			if ( this.ordered && !ooo ) {
+				this.entries.reverse();
+			} else {
+				/* merge opts from ooo */
+				var opts = (function( o ) {
+					var opts = {
+						fn: function( a, b ) {
+							return (
+								(a.innerText ? a.innerText : a.textContent ) > (b.innerText ? b.innerText : b.textContent )
+								) ? 1 : 0;
+						}
+					};
+					for ( var attr in o ) { opts[attr] = o[attr]; }
+					return opts;
+				})( ooo ),
+				organizer = ( opts.sorter ) ? opts.sorter : ( opts.shuffle ) ? shuffle : bsort;
+				/* sorting or shuffling */
+				organizer.call( this.entries, opts.fn );
+				if ( opts.reverse ) this.entries.reverse();
+			}
+
+			/* create a new clone */
+			for ( var i = 0, al = this.size(); i < al; i++ ) {
+				frag.appendChild( this.entries[i] );
+			}
+			root.appendChild( frag );
+
+			/* replace */
+			this.root.parentNode.replaceChild( root, this.root );
+
+			/* the list object is ordered now */
+			this.ordered = true;
+			return this.init( root );
 		}
 	};
 
@@ -82,5 +135,21 @@
 	List.noConflict = function() {
 		window.List = _List;
 		return List;
+	}
+
+	function shuffle() {
+		for ( var i = this.length, j, buf; i; j = parseInt ( Math.random() * i ), buf = this[--i], this[i] = this[j], this[j] = buf );
+	}
+
+	function bsort( fn ) {
+		for ( var buf, i = this.length - 1, j; j = i - 1, i >= 0; i-- ) {
+			for ( ; j >= 0; j-- ) {
+				if ( fn( this[j], this[i] ) > 0 ) {
+					buf = this[i];
+					this[i] = this[j];
+					this[j] = buf;
+				}
+			}
+		}
 	}
 })();
