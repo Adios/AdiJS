@@ -1,12 +1,5 @@
 $(function() {
 
-	function isInPosition() {
-		for ( var i = 0, al = arguments.length; i < al; i++ ) {
-			if ( $.trim($('ul.todo > *').eq(i).text()) != arguments[i] ) return false;
-		}
-		return true;
-	};
-
 	function createEntry( text ) {
 		var e = document.createElement( 'li' );
 		e.appendChild( document.createTextNode( text ) );
@@ -52,12 +45,12 @@ $(function() {
 				'insert( e, e, e )'
 			);
 		} );
-		ok ( isInPosition( '2', '3', '4', '1' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), '2341abcdefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() {
 			ok( list.insert( 1, createEntry( '5' ) ) , 'insert( 1, e )' );
 		} );
-		ok ( isInPosition( '2', '5', '3' ), 'they sholud be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), '25341abcdefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 3, function() {
 			ok(
@@ -65,17 +58,17 @@ $(function() {
 				'insert( 2, e, e, e )'
 			);
 		} );
-		ok ( isInPosition( '2', '5', '6', '7', '8', '3' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), '25678341abcdefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() {
 			ok( list.insert( -1, createEntry( '9' ) ), 'insert( -1, e )' );
 		} );
-		ok ( isInPosition( '9', '2'), 'it should be at the head');
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), '925678341abcdefg', 'at head' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 1, function() {
 			ok( list.insert( 200, createEntry( '10' ) ), 'insert( 200, e )' );
 		} );
-		ok ( isInPosition( '10', '9'), 'it should be at the head');
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), '10925678341abcdefg', 'at head' );
 	} );
 
 	test( 'remove()', function() {
@@ -84,48 +77,47 @@ $(function() {
 		difference( 'List( $("ul.todo").get(0) ).size()', -1, function() {
 			ok( list.remove( 3 ), 'remove( 3 )' );
 		} );
-
-		ok ( isInPosition( 'a', 'b', 'c', 'e', 'f', 'g' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', -3, function() {
 			ok( list.remove( 0, 3, 2 ), 'remove( 0, 3, 2 )' );
 		} );
-		ok ( isInPosition( 'b', 'f', 'g' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'bfg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', -2, function() {
 			ok( list.remove( 1, 1, 1, 2 ), 'remove( 1, 1, 1, 2 )' );
 		} );
-		ok ( isInPosition( 'b' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'b', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 0, function() {
 			ok( list.remove( 100, -100, undefined ), 'remove( 100, -100, undefined )' );
 		} );
-		ok ( isInPosition( 'b' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'b', 'in position' );
 	} );
 
 	test( 'reorder()', function() {
 		var list = List( $('ul.todo').get(0) );
 
 		ok ( list.reorder( {reverse: true} ), 'sort reversely' );
-		ok ( isInPosition( 'g', 'f', 'e', 'd', 'c', 'b', 'a' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'gfedcba', 'in position' );
 
 		ok ( list.reorder(), 'sort' );
-		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefg', 'in position' );
 
 		ok ( list.reorder( {shuffle: true} ), 'shuffle' );
-		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), "their positions shouldn't be the same position as berfore" );
+		ok ( $('ul.todo > *').text().replace(/ /g, '') != 'abcdefg', "their positions shouldn't be the same position as before" );
 
 		ok ( list.reorder( {fn: priority} ), 'sort by priority' );
-		ok ( isInPosition( 'd', 'g', 'e', 'a', 'f', 'b', 'c' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'dgeafbc', 'in position' );
 
 		ok ( list.reorder( {fn: priority, reverse: true} ), 'sort in reverse by priority' );
-		ok ( isInPosition( 'c', 'b', 'f', 'a', 'e', 'g', 'd' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'cbfaegd', 'in position' );
 
 		ok ( list.reorder(), 'toggle sort' );
-		ok ( isInPosition( 'd', 'g', 'e', 'a', 'f', 'b', 'c' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'dgeafbc', 'in position' );
 
 		ok ( list.reorder( {eyecandy: true} ), 'sort with eyecandy enabled)' );
-		ok ( isInPosition( 'a', 'b', 'c', 'd', 'e', 'f', 'g' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'abcdefg', 'in position' );
 	} );
 
 	test( 'chain', function() {
@@ -143,7 +135,7 @@ $(function() {
 				, 'insert( e ).insert( e ).remove( 0 ).insert( e, e ).remove( 1, 2 )'
 			);
 		} );
-		ok ( isInPosition( 'dd' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'ddabcdefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', 0, function() {
 			ok(
@@ -153,7 +145,7 @@ $(function() {
 				, 'insert( 1, e ).insert( 0, e ).remove( 0 ).insert( 1, e, e ).remove( 1, 2, 3 )'
 			);
 		} );
-		ok ( isInPosition( 'dd' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'ddabcdefg', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', -7, function() {
 			ok(
@@ -162,7 +154,7 @@ $(function() {
 				, 'insert( -100, e ).insert( 100, e ).remove( a lot ).insert( e )'
 			);
 		} );
-		ok ( isInPosition( 'mm' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'mm', 'in position' );
 
 		difference( 'List( $("ul.todo").get(0) ).size()', -7, function() {
 			ok(
@@ -171,6 +163,6 @@ $(function() {
 				, 'insert( e ).insert( 1, e ).reorder().remove( 1 ).insert( e ).reorder()'
 			);
 		} );
-		ok ( isInPosition( 'oo', 'mm', 'pp' ), 'they should be in position' );
+		equals ( $('ul.todo > *').text().replace(/ /g, ''), 'oommpp', 'in position' );
 	} );
 })
