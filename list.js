@@ -98,17 +98,11 @@
 			} else {
 				/* merge opts from ooo */
 				var opts = (function( o ) {
-					var opts = {
-						fn: function( a, b ) {
-							return (
-								(a.innerText ? a.innerText : a.textContent ) > (b.innerText ? b.innerText : b.textContent )
-								) ? 1 : 0;
-						}
-					};
+					var opts = { fn: compare };
 					for ( var attr in o ) { opts[attr] = o[attr]; }
 					return opts;
 				})( ooo ),
-				organizer = ( opts.sorter ) ? opts.sorter : ( opts.shuffle ) ? shuffle : bsort;
+				organizer = ( opts.sorter ) ? opts.sorter : ( opts.shuffle ) ? shuffle : Array.prototype.sort;
 				/* sorting or shuffling */
 				organizer.call( this.entries, opts.fn );
 				if ( opts.reverse ) this.entries.reverse();
@@ -140,15 +134,11 @@
 		for ( var i = this.length, j, buf; i; j = parseInt ( Math.random() * i ), buf = this[--i], this[i] = this[j], this[j] = buf );
 	}
 
-	function bsort( fn ) {
-		for ( var buf, i = this.length - 1, j; j = i - 1, i >= 0; i-- ) {
-			for ( ; j >= 0; j-- ) {
-				if ( fn( this[j], this[i] ) > 0 ) {
-					buf = this[i];
-					this[i] = this[j];
-					this[j] = buf;
-				}
-			}
-		}
+	function compare( a, b ) {
+		var a = a.innerText || a.textContent,
+			b = b.innerText || b.textContent;
+
+		if (a == b) return 0;
+		return ( a > b ) ? 1 : -1;
 	}
 })();
